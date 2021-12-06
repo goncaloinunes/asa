@@ -1,0 +1,8 @@
+*
+!/**/
+!*.*
+!Makefile
+*.env
+*.o
+*.log
+*.diff
