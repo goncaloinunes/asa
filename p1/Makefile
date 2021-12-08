@@ -18,5 +18,5 @@ run: project
 	./project
 
 clean:
-	rm -f project *.o
+	rm -f project tests/*.diff
 
