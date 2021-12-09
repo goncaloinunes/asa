@@ -21,7 +21,7 @@ void readSequenceToVector(vector<int>* vec) {
 }
 
 
-pair<unsigned int, unsigned int> findNumberAndLengthOfLIS(vector<int>* sequence) {
+pair<ul, ul> findNumberAndLengthOfLIS(vector<int>* sequence) {
 
     ul maxLength = 0;
     ul subsequenceCount = 0;
