@@ -2,7 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
-#include <utility>
+#include <algorithm>
 
 #define ul unsigned long
 
@@ -33,7 +33,7 @@ pair<ul, ul> findNumberAndLengthOfLIS(vector<int>* sequence) {
     vector<ul> counts(sequenceLength, 1);
 
     
-    for(ul i = 0; i < sequenceLength; i++) {
+    for(ul i = 1; i < sequenceLength; i++) {
         for(ul j = 0; j < i; j++) {
 
             if(sequence->at(i) <= sequence->at(j)) {
@@ -69,7 +69,28 @@ pair<ul, ul> findNumberAndLengthOfLIS(vector<int>* sequence) {
         */
     }
 
-    return pair<ul , ul>(maxLength, subsequenceCount);
+    return pair<ul, ul>(maxLength, subsequenceCount);
+}
+
+
+ul findLengthOfLCIS(vector<int>* seq1, vector<int>* seq2) {
+    vector<ul> lengths(min(seq1->size(), seq2->size()), 0);
+    ul current;
+
+    for(ul i = 0; i < seq1->size(); i++) {
+        current = 0;
+
+        for(ul j = 0; j < seq2->size(); j++) {
+            if(seq1->at(i) == seq2->at(j) && current + 1 > lengths[j]) {
+                lengths[j] = current + 1;
+            } 
+            else if(seq1->at(i) > seq2->at(j) && lengths[j] > current) {
+                current = lengths[j];
+            }
+        }
+    }
+
+    return *max_element(lengths.begin(), lengths.end());
 }
 
 
@@ -86,9 +107,15 @@ void handleFirstProblem() {
 }
 
 
-// TODO: Implement function
+
 void handleSecondProblem() {
-    return;
+    vector<int> sequence1;
+    vector<int> sequence2;
+
+    readSequenceToVector(&sequence1);
+    readSequenceToVector(&sequence2);
+
+    cout << findLengthOfLCIS(&sequence1, &sequence2);
 }
 
 

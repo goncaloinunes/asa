@@ -79,11 +79,6 @@ def calculateTime():
 
 
         
-        
-
-
-
-
 def main():
     pathlib.Path(INPUT_FOLDER).mkdir(parents=True, exist_ok=True)
     pathlib.Path(DOCS_FOLDER).mkdir(parents=True, exist_ok=True)
