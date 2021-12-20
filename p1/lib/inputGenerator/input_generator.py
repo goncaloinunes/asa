@@ -12,7 +12,7 @@ DOCS_FOLDER = r"../../docs/analysis/"
 EXECUTABLE_PATH = r"../../project"
 INPUT_FOLDER = r"generatedInputs/"
 FILENAME = "input"
-MINIMUM_INPUT_SIZE = 1000
+MINIMUM_INPUT_SIZE = 0
 MAXIMUN_INPUT_SIZE = 50_000
 STEP = 1000
 INPUTS_PER_SIZE = 1
@@ -46,7 +46,7 @@ def generateInputs(problem):
     print("Generation completed!")
 
 
-def calculateTime():
+def calculateTime(problem):
 
     header = ['Input Size', 'Time']
     data = []
@@ -68,7 +68,7 @@ def calculateTime():
         print(f"{elaped_time} seconds\n")
 
 
-    with open(DOCS_FOLDER + 'perfomance.csv', 'w', encoding='UTF8', newline='') as file:
+    with open(DOCS_FOLDER + f"perfomance{problem}.csv", 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
 
         # write the header
@@ -87,7 +87,7 @@ def main():
         if(type(sys.argv[1] == int)):
             problem = int(sys.argv[1])
             generateInputs(problem)
-            calculateTime()
+            calculateTime(problem)
     
 
         
