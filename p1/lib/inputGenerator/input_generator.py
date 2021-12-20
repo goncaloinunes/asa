@@ -20,6 +20,14 @@ INPUTS_PER_SIZE = 1
 RANGE_RANDOM_NUMBER = 2_048
 
 
+
+def generateSequence(file, i):
+    for w in range(i):
+        number = random.randint(-RANGE_RANDOM_NUMBER, RANGE_RANDOM_NUMBER)
+        file.write(f"{number} ")
+    file.write("\n")
+
+
 def generateInputs(problem):
 
     os.system("rm -r " + INPUT_FOLDER + "*")
@@ -30,9 +38,10 @@ def generateInputs(problem):
         for j in range(INPUTS_PER_SIZE):
              with open(INPUT_FOLDER + FILENAME  + "_" + str(problem) + "_" + str(i) + "_" + str(j), "w") as file:
                  file.write(f"{problem}\n")
-                 for w in range(i):
-                     number = random.randint(-RANGE_RANDOM_NUMBER, RANGE_RANDOM_NUMBER)
-                     file.write(f"{number} ")
+                 generateSequence(file, i)
+                 if problem == 2:
+                     generateSequence(file, i)
+                 
 
     print("Generation completed!")
 
@@ -81,7 +90,7 @@ def main():
 
     if(len(sys.argv) > 1):
         if(type(sys.argv[1] == int)):
-            problem = sys.argv[1]
+            problem = int(sys.argv[1])
             generateInputs(problem)
             calculateTime()
     
