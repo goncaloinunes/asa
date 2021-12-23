@@ -7,3 +7,5 @@
 *.log
 *.diff
 *.vscode
+*.csv
+*.xlsx

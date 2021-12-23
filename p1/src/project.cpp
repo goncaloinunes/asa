@@ -2,9 +2,9 @@
 #include <vector>
 #include <sstream>
 #include <string>
-#include <algorithm>
 
-#define ul unsigned long
+
+#define ull unsigned long long
 
 using namespace std;
 
@@ -13,30 +13,37 @@ void readSequenceToVector(vector<int>* vec) {
     int number;
     string line;
 
+    
     getline(cin >> ws, line);
+    /*
+    if(line.empty()) {
+        return;
+    }
+    */
+
     istringstream iss(line);
-    while(iss >> number) {
-        vec->push_back(number);
+    while(iss >> number) {   
+        vec->push_back(number); 
     }
 }
 
 
-pair<ul, ul> findNumberAndLengthOfLIS(vector<int>* sequence) {
+pair<ull, ull> findNumberAndLengthOfLIS(vector<int>* sequence) {
 
-    ul maxLength = 0;
-    ul subsequenceCount = 0;
-    ul sequenceLength = sequence->size();
+    ull maxLength = 0;
+    ull subsequenceCount = 0;
+    ull sequenceLength = sequence->size();
 
     // Initialize all the lengths with ones;
-    vector<ul> lengths(sequenceLength, 1);
+    vector<ull> lengths(sequenceLength, 1);
     // Initialize all the counts with ones
-    vector<ul> counts(sequenceLength, 1);
+    vector<ull> counts(sequenceLength, 1);
 
     
-    for(ul i = 1; i < sequenceLength; i++) {
-        for(ul j = 0; j < i; j++) {
+    for(ull i = 0; i < sequenceLength; i++) {
+        for(ull j = 0; j < i; j++) {
 
-            if(sequence->at(i) <= sequence->at(j)) {
+            if((*sequence)[i] <= (*sequence)[j]) {
                 continue;
             }
 
@@ -47,62 +54,69 @@ pair<ul, ul> findNumberAndLengthOfLIS(vector<int>* sequence) {
                 counts[i] += counts[j];
             }
         }
-
+        
         if (maxLength == lengths[i]) {
             subsequenceCount += counts[i];
-        } else if (maxLength < lengths[i]) {
+        } else if (lengths[i] > maxLength) {
             maxLength = lengths[i];
             subsequenceCount = counts[i];
         }
-
-        // Forma menos eficiente de calcular o maxLength e subsequencesCount
-        /*
-        for(int i = 0; i < sequenceLength; i++) {
-            *maxLength = max(i, *maxLength);
-        }
-
-        for(int i = 0; i < sequenceLength; i++) {
-            if(lengths[i] == *maxLength) {
-                *subsequenceCount += counts[i];
-            }
-        }
-        */
+               
     }
 
-    return pair<ul, ul>(maxLength, subsequenceCount);
+    //Forma menos eficiente de calcular o maxLength e subsequencesCount
+    /*
+    for(ull i = 0; i < sequenceLength; i++) {
+        maxLength = max(i, maxLength);
+    }
+
+    for(ull i = 0; i < sequenceLength; i++) {
+        if(lengths[i] == maxLength) {
+            subsequenceCount += counts[i];
+        }
+    }
+    */
+
+    return pair<ull, ull>(maxLength, subsequenceCount);
 }
 
 
-ul findLengthOfLCIS(vector<int>* seq1, vector<int>* seq2) {
-    vector<ul> lengths(min(seq1->size(), seq2->size()), 0);
-    ul current;
+ull findLengthOfLCIS(vector<int>* seq1, vector<int>* seq2) {
+    vector<ull> lengths(seq2->size(), 0);
+    ull currentLength;
+    ull maxLength = 0;
 
-    for(ul i = 0; i < seq1->size(); i++) {
-        current = 0;
+    for(ull i = 0; i < seq1->size(); i++) {
+        currentLength = 0;
 
-        for(ul j = 0; j < seq2->size(); j++) {
-            if(seq1->at(i) == seq2->at(j) && current + 1 > lengths[j]) {
-                lengths[j] = current + 1;
-            } 
-            else if(seq1->at(i) > seq2->at(j) && lengths[j] > current) {
-                current = lengths[j];
+        for(ull j = 0; j < seq2->size(); j++) {
+            if((*seq1)[i] > (*seq2)[j] && lengths[j] > currentLength) {
+                currentLength = lengths[j];
             }
+            else if((*seq1)[i] == (*seq2)[j]) {
+                lengths[j] = currentLength + 1;
+
+                // Update the maximum value of lengths
+                if(lengths[j] > maxLength) {
+                    maxLength = lengths[j];
+                }
+            } 
         }
     }
 
-    return *max_element(lengths.begin(), lengths.end());
+    return maxLength;
 }
 
 
 void handleFirstProblem() {
     vector<int> sequence;
-    pair<ul, ul> result;
+    pair<ull, ull> result;
 
     readSequenceToVector(&sequence);
 
     result = findNumberAndLengthOfLIS(&sequence);
 
-    cout << result.first << " " << result.second;
+    cout << result.first << " " << result.second << endl;
 
 }
 
@@ -115,7 +129,7 @@ void handleSecondProblem() {
     readSequenceToVector(&sequence1);
     readSequenceToVector(&sequence2);
 
-    cout << findLengthOfLCIS(&sequence1, &sequence2);
+    cout << findLengthOfLCIS(&sequence1, &sequence2) << endl;
 }
 
 
@@ -123,6 +137,7 @@ int main() {
     int problem;
 
     cin >> problem;
+    //cin.ignore(1, '\n');
 
     if(problem == 1) {
         handleFirstProblem();
