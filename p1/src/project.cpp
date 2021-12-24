@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 
 #define ull unsigned long long
 
@@ -23,6 +24,23 @@ void readSequenceToVector(vector<int>& vec) {
     while(iss >> number) {   
         vec.push_back(number); 
     }
+}
+
+// Time Complexity: O(N)
+// Space Complexity: O(N)
+void removeDuplicates(vector<int>& seq) {
+	unordered_map<int, int> m;
+	ull k = 0;
+
+	for (ull i = 0; i < seq.size(); i++) {
+		// if m.find(x) == m.end() then it means that
+		// x is present in the map
+		if (m.find(seq[i]) == m.end()) {
+			m[seq[i]] = 1; // inserting arr[i] into the map
+			seq[k++] = seq[i];
+		}
+	}
+    seq.resize(k);
 }
 
 
@@ -121,7 +139,13 @@ void handleSecondProblem() {
 
     readSequenceToVector(sequence1);
     readSequenceToVector(sequence2);
-
+    removeDuplicates(sequence1);
+    removeDuplicates(sequence2);
+    /*
+    for(ull i =0; i<sequence2.size(); i++)
+        cout << sequence2[i] << ' ';
+    cout << '\n';
+    */
     cout << findLengthOfLCIS(sequence1, sequence2) << endl;
 }
 
