@@ -2,6 +2,8 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <climits>
+#include <algorithm>
 #include <unordered_map>
 
 #define ull unsigned long long
@@ -14,33 +16,69 @@ void readSequenceToVector(vector<int>& vec) {
     string line;
 
     getline(cin >> ws, line);
-    /*
-    if(line.empty()) {
-        return;
-    }
-    */
-
     istringstream iss(line);
+
     while(iss >> number) {   
         vec.push_back(number); 
     }
 }
 
+
+// Time Complexity: O(N)
+void removeConsecutiveDuplicates(vector<int>& vet, unordered_map<int, int>& m) {
+	int last = INT_MAX;
+    ull k = 0;
+
+	for (ull i = 0; i < vet.size(); i++) {
+		// if m.find(x) == m.end() then it means that
+		// x is not present in the map
+		if(m.find(vet[i]) == m.end()) {
+			m[vet[i]] = 1; // inserting vet[i] into the map
+		}
+        else if(vet[i] == last){
+            continue;
+        }
+        vet[k++] = vet[i];
+        last = vet[i];
+	}
+    //cout << "removeDuplicates: " << vet.size() <<' '<< k <<' '<< vet.size()-k << endl;
+    vet.resize(k);
+}
+
+
+// Time Complexity: O(N), where N equals max(v1.size(), v2.size())
+void removeUncommonElements(vector<int>& v1, vector<int>& v2, unordered_map<int, int>& m1, unordered_map<int, int>& m2) {
+    ull k = 0;
+    for(ull i = 0; i < v1.size(); i++) {
+        if(m2.find(v1[i]) != m2.end()) {
+            v1[k++] = v1[i];
+		}        
+    }
+    //cout << "removeUncommonElements v1: " << v1.size() <<' '<< k <<' '<< v1.size()-k << endl;
+    v1.resize(k);
+
+    k = 0;
+    for(ull i = 0; i < v2.size(); i++) {
+        if(m1.find(v2[i]) != m1.end()) {
+            v2[k++] = v2[i];
+		}        
+    }
+    //cout << "removeUncommonElements v2: " << v2.size() <<' '<< k <<' '<< v2.size()-k << endl;
+    v2.resize(k);
+}
+
+
 // Time Complexity: O(N)
 // Space Complexity: O(N)
-void removeDuplicates(vector<int>& seq) {
-	unordered_map<int, int> m;
-	ull k = 0;
+// Removes sequecial duplicates and uncommon elements in both sequences
+void preprocessSequences(vector<int>& s1, vector<int>& s2) {
+	unordered_map<int, int> m1, m2;
 
-	for (ull i = 0; i < seq.size(); i++) {
-		// if m.find(x) == m.end() then it means that
-		// x is present in the map
-		if (m.find(seq[i]) == m.end()) {
-			m[seq[i]] = 1; // inserting arr[i] into the map
-			seq[k++] = seq[i];
-		}
-	}
-    seq.resize(k);
+    // remove duplicates and builds the unordered_map
+    removeConsecutiveDuplicates(s1, m1);   
+    removeConsecutiveDuplicates(s2, m2);
+    
+    removeUncommonElements(s1, s2, m1, m2);
 }
 
 
@@ -77,19 +115,6 @@ pair<ull, ull> findNumberAndLengthOfLIS(vector<int>& sequence) {
             subsequenceCount = counts[i];
         }
     }
-
-    //Forma menos eficiente de calcular o maxLength e subsequencesCount
-    /*
-    for(ull i = 0; i < sequenceLength; i++) {
-        maxLength = max(i, maxLength);
-    }
-
-    for(ull i = 0; i < sequenceLength; i++) {
-        if(lengths[i] == maxLength) {
-            subsequenceCount += counts[i];
-        }
-    }
-    */
 
     return pair<ull, ull>(maxLength, subsequenceCount);
 }
@@ -134,18 +159,12 @@ void handleFirstProblem() {
 
 
 void handleSecondProblem() {
-    vector<int> sequence1;
-    vector<int> sequence2;
+    vector<int> sequence1, sequence2;
 
     readSequenceToVector(sequence1);
     readSequenceToVector(sequence2);
-    removeDuplicates(sequence1);
-    removeDuplicates(sequence2);
-    /*
-    for(ull i =0; i<sequence2.size(); i++)
-        cout << sequence2[i] << ' ';
-    cout << '\n';
-    */
+    preprocessSequences(sequence1, sequence2);
+
     cout << findLengthOfLCIS(sequence1, sequence2) << endl;
 }
 
@@ -154,13 +173,12 @@ int main() {
     int problem;
 
     cin >> problem;
-    //cin.ignore(1, '\n');
 
     if(problem == 1) {
         handleFirstProblem();
-    } else if (problem == 2) {
+    } 
+    else if (problem == 2) {
         handleSecondProblem();
     }
-
     return 0;
 }
