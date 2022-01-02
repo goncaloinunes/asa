@@ -165,6 +165,7 @@ pair<ull, ull> findNumberAndLengthOfLIS1(int* sequence, ull size) {
                     counts[i] += counts[j];
                 }
             }
+            break;
         }
 
         if (maxLength < lengths[i]) {
