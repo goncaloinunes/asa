@@ -131,13 +131,75 @@ pair<ull, ull> findNumberAndLengthOfLIS(int* sequence, ull size) {
         else if (maxLength == lengths[i]) {
             subsequenceCount += counts[i];
         } 
-    }
+    }/*
+    for(ull i = 0; i < size; i++)
+        cout << sequence[i] << ' ';
+    cout << endl;
+    for(ull i = 0; i < size; i++)
+        cout << lengths[i] << ' ';
+    cout << endl;
+    for(ull i = 0; i < size; i++)
+        cout << counts[i] << ' ';
+    cout << endl;*/
+    return pair<ull, ull>(maxLength, subsequenceCount);
+}
 
+pair<ull, ull> findNumberAndLengthOfLIS1(int* sequence, ull size) {
+    ull maxLength = 0,
+        subsequenceCount = 0;
+    
+    vector<ull> lengths(size, 1);
+    vector<ull> counts(size, 1);
+
+    for(ull i = 0; i < size; i++) {
+        for(long long j = i - 1; j >= 0; j--) {
+            if(sequence[j] >= sequence[i]) {
+                continue;
+            }
+            
+            lengths[i] = lengths[j] + 1;
+            counts[i] = counts[j];
+            
+            for(j--; j >= 0; j--) {
+                if(lengths[j] == lengths[i] - 1 && sequence[j] < sequence[i]) {
+                    counts[i] += counts[j];
+                }
+            }
+        }
+
+        if (maxLength < lengths[i]) {
+            maxLength = lengths[i];
+            subsequenceCount = counts[i];
+        }
+        else if (maxLength == lengths[i]) {
+            subsequenceCount += counts[i];
+        }
+    }
+    /*
+    for(ull i = 0; i < size; i++)
+        if(maxLength < lengths[i])
+            maxLength = lengths[i];
+
+    for(ull i = 0; i < size; i++)
+        if(lengths[i] == maxLength)
+            subsequenceCount += counts[i];
+    */
+    /*
+    for(ull i = 0; i < size; i++)
+        cout << sequence[i] << ' ';
+    cout << endl;
+    for(ull i = 0; i < size; i++)
+        cout << lengths[i] << ' ';
+    cout << endl;
+    for(ull i = 0; i < size; i++)
+        cout << counts[i] << ' ';
+    cout << endl;
+    */
     return pair<ull, ull>(maxLength, subsequenceCount);
 }
 
 
-pair<ull, ull> findNumberAndLengthOfLIS1(vector<int>& seq){
+pair<ull, ull> findNumberAndLengthOfLIS2(vector<int>& seq){
     vector<pair<int, int>> dp;
     int longest = 1,
         current,
@@ -199,7 +261,7 @@ void handleFirstProblem() {
     pair<ull, ull> result;
 
     readSequenceToVector(sequence);
-    result = findNumberAndLengthOfLIS(&(sequence[0]), sequence.size());
+    result = findNumberAndLengthOfLIS1(&(sequence[0]), sequence.size());
     
     cout << result.first << " " << result.second << endl;
 }
