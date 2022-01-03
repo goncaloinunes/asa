@@ -4,6 +4,7 @@
 #include <string>
 #include <climits>
 #include <unordered_map>
+#include <algorithm>
 
 #define ull unsigned long long
 
@@ -98,6 +99,63 @@ pair<ull, ull> findNumberAndLengthOfLIS(int* sequence, ull size) {
     ull maxLength = 0,
         subsequenceCount = 0;
     
+    vector<ull> lengths(size, 1);
+    vector<ull> counts(size, 1);
+    
+    vector<int> sorted(size);
+    copy(sequence, sequence + size, begin(sorted));
+    sort(begin(sorted), end(sorted));
+
+    for(ull i = 0; i < size; i++) {
+        for(long j = i - 1; j >= 0; j--) {
+
+            if(sequence[j] >= sequence[i]) {
+                continue;
+            }
+
+            ull idx = lower_bound(sorted.begin(), sorted.end(), sequence[i]) - sorted.begin() - 1;
+            
+            for(long k = j; k >= 0; k--) {
+                if(lengths[k] >= lengths[i] && sequence[k] < sequence[i]) {
+                    lengths[i] = lengths[k] + 1;
+                    counts[i] = counts[k];
+                    j = k;
+                    if(sequence[k] == sorted[idx])
+                        break;
+                }
+            }
+            for(j--; j >= 0; j--) {
+                if(lengths[j] == lengths[i] - 1 && sequence[j] < sequence[i]) {
+                    counts[i] += counts[j];
+                }
+            }
+        }
+        if (maxLength < lengths[i]) {
+            maxLength = lengths[i];
+            subsequenceCount = counts[i];
+        }
+        else if (maxLength == lengths[i]) {
+            subsequenceCount += counts[i];
+        }
+    }
+    /*
+    for(ull i = 0; i < size; i++)
+        cout << sequence[i] << ' ';
+    cout << endl;
+    for(ull i = 0; i < size; i++)
+        cout << lengths[i] << ' ';
+    cout << endl;
+    for(ull i = 0; i < size; i++)
+        cout << counts[i] << ' ';
+    cout << endl;
+    */
+    return pair<ull, ull>(maxLength, subsequenceCount);
+}
+
+pair<ull, ull> findNumberAndLengthOfLIS1(int* sequence, ull size) {
+    ull maxLength = 0,
+        subsequenceCount = 0;
+    
     /*ull lengths[100000];
     ull counts[100000];
     ull* lengths = new ull[size];
@@ -144,91 +202,6 @@ pair<ull, ull> findNumberAndLengthOfLIS(int* sequence, ull size) {
     return pair<ull, ull>(maxLength, subsequenceCount);
 }
 
-pair<ull, ull> findNumberAndLengthOfLIS1(int* sequence, ull size) {
-    ull maxLength = 0,
-        subsequenceCount = 0;
-    
-    vector<ull> lengths(size, 1);
-    vector<ull> counts(size, 1);
-
-    for(ull i = 0; i < size; i++) {
-        for(long long j = i - 1; j >= 0; j--) {
-            if(sequence[j] >= sequence[i]) {
-                continue;
-            }
-            
-            lengths[i] = lengths[j] + 1;
-            counts[i] = counts[j];
-            
-            for(j--; j >= 0; j--) {
-                if(lengths[j] == lengths[i] - 1 && sequence[j] < sequence[i]) {
-                    counts[i] += counts[j];
-                }
-            }
-            break;
-        }
-
-        if (maxLength < lengths[i]) {
-            maxLength = lengths[i];
-            subsequenceCount = counts[i];
-        }
-        else if (maxLength == lengths[i]) {
-            subsequenceCount += counts[i];
-        }
-    }
-    /*
-    for(ull i = 0; i < size; i++)
-        if(maxLength < lengths[i])
-            maxLength = lengths[i];
-
-    for(ull i = 0; i < size; i++)
-        if(lengths[i] == maxLength)
-            subsequenceCount += counts[i];
-    */
-    /*
-    for(ull i = 0; i < size; i++)
-        cout << sequence[i] << ' ';
-    cout << endl;
-    for(ull i = 0; i < size; i++)
-        cout << lengths[i] << ' ';
-    cout << endl;
-    for(ull i = 0; i < size; i++)
-        cout << counts[i] << ' ';
-    cout << endl;
-    */
-    return pair<ull, ull>(maxLength, subsequenceCount);
-}
-
-
-pair<ull, ull> findNumberAndLengthOfLIS2(vector<int>& seq){
-    vector<pair<int, int>> dp;
-    int longest = 1,
-        current,
-        count;
-
-    for(ull i = 0; i < seq.size(); i++)
-        dp.push_back(make_pair(1, 1));
-
-    for(ull i = 0; i < seq.size(); i++) {
-        current = 1;
-        count = 0;
-        for(ull j = 0; j < i; j++)
-            if(seq[j] < seq[i])
-                current = max(current, dp[j].first + 1);
-        for(ull j = 0; j < i; j++)
-            if(dp[j].first == current-1 && seq[j] < seq[i])
-                count += dp[j].second;
-        dp[i] = {current, max(count, dp[i].second)};
-        longest = max(longest, current);
-    }
-    count = 0;
-    for(ull i = 0; i < seq.size(); i++)
-        if(dp[i].first == longest)
-            count += dp[i].second;
-
-    return pair<ull, ull>(longest, count);
-}
-
 
 ull findLengthOfLCIS(vector<int>& seq1, vector<int>& seq2) {
     vector<ull> lengths(seq2.size(), 0);
@@ -260,9 +233,10 @@ ull findLengthOfLCIS(vector<int>& seq1, vector<int>& seq2) {
 void handleFirstProblem() {
     vector<int> sequence;
     pair<ull, ull> result;
+    pair<ull, ull> result1;
 
     readSequenceToVector(sequence);
-    result = findNumberAndLengthOfLIS1(&(sequence[0]), sequence.size());
+    result = findNumberAndLengthOfLIS(&(sequence[0]), sequence.size());
     
     cout << result.first << " " << result.second << endl;
 }
