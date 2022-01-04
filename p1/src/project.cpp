@@ -1,4 +1,3 @@
-// Proj1 ASA 2021-2022 tp19 ist199053 ist199074
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -7,6 +6,7 @@
 #include <unordered_map>
 #include <algorithm>
 
+#define ull unsigned long long
 #define ll long long
 
 using namespace std;
@@ -28,9 +28,9 @@ void readSequenceToVector(vector<int>& vec) {
 // Time Complexity: O(N)
 void removeConsecutiveDuplicates(vector<int>& vet, unordered_map<int, int>& m) {
     int last = INT_MAX;
-    ll k = 0;
+    ull k = 0;
 
-	for (ll i = 0; i < vet.size(); i++) {
+	for (ull i = 0; i < vet.size(); i++) {
 
 		if(m.find(vet[i]) == m.end())   // if m.find(x) == m.end() then x is not in the map yet
 			m[vet[i]] = 1;  // inserting vet[i] into the map
@@ -48,15 +48,15 @@ void removeConsecutiveDuplicates(vector<int>& vet, unordered_map<int, int>& m) {
 
 // Time Complexity: O(N), where N equals max(v1.size(), v2.size())
 void removeUncommonElements(vector<int>& v1, vector<int>& v2, unordered_map<int, int>& m1, unordered_map<int, int>& m2) {
-    ll k = 0;
+    ull k = 0;
     
-    for(ll i = 0; i < v1.size(); i++)   // for every element in v1
+    for(ull i = 0; i < v1.size(); i++)   // for every element in v1
         if(m2.find(v1[i]) != m2.end())  // check if element is in m2
             v1[k++] = v1[i];    // add element and increase number of elements
     v1.resize(k);   // resize v1 with number of v1 elements in m2
 
     k = 0;
-    for(ll i = 0; i < v2.size(); i++)
+    for(ull i = 0; i < v2.size(); i++)
         if(m1.find(v2[i]) != m1.end())
             v2[k++] = v2[i];
     v2.resize(k);
@@ -93,12 +93,12 @@ pair<ll, ll> findNumberAndLengthOfLIS(int* sequence, ll size) {
         // ignore all the first previous elements bigger or equal to sequence[i]
         for(; j >= 0; j--) {
             if(sequence[j] < sequence[i])
-                continue;
+                break;
         }
 
         // find the previous element of sequence[i] in sorted sequence
         ll current_idx = lower_bound(sorted.begin(), sorted.end(), sequence[i]) - sorted.begin();
-        ll previous = sorted[current_idx - 1];
+        int previous = sorted[current_idx - 1];
         
         // update current length, length[i]
         for(ll k = j; k >= 0; k--) {
@@ -131,14 +131,14 @@ pair<ll, ll> findNumberAndLengthOfLIS(int* sequence, ll size) {
 }
 
 
-ll findLengthOfLCIS(vector<int>& seq1, vector<int>& seq2) {
-    vector<ll> lengths(seq2.size(), 0);
-    ll currentLength, maxLength = 0;
+ull findLengthOfLCIS(vector<int>& seq1, vector<int>& seq2) {
+    vector<ull> lengths(seq2.size(), 0);
+    ull currentLength, maxLength = 0;
     
-    for(ll i = 0; i < seq1.size(); i++) {
+    for(ull i = 0; i < seq1.size(); i++) {
         currentLength = 0;
 
-        for(ll j = 0; j < seq2.size(); j++) {
+        for(ull j = 0; j < seq2.size(); j++) {
             if(seq1[i] > seq2[j] && lengths[j] > currentLength)
                 currentLength = lengths[j];
             
@@ -159,7 +159,6 @@ ll findLengthOfLCIS(vector<int>& seq1, vector<int>& seq2) {
 void handleFirstProblem() {
     vector<int> sequence;
     pair<ll, ll> result;
-    pair<ll, ll> result1;
 
     readSequenceToVector(sequence);
     result = findNumberAndLengthOfLIS(&(sequence[0]), sequence.size());
