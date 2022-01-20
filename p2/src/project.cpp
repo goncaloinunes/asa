@@ -35,8 +35,13 @@ class Graph {
         }
 
         bool IsDAG() {
-            for (int v = 1; v < numVertices; v++) {
-                if (colors[v] == WHITE && !Dfs(v))
+            // Condição suficiente mas não necessária para o grafo ser um DAG
+            if(numVertices < numEdges - 1) {
+                return false;
+            }
+
+            for (size_t v = 1; v < numVertices+1; v++) {
+                if (colors[v] == WHITE && Dfs(v))
                     return false;
             }
 
@@ -48,15 +53,15 @@ class Graph {
             colors[v] = GREY;
             for (unsigned int u : adj[v]) {
                 if (colors[u] == WHITE) {
-                    if(!Dfs(u)) {
-                        return false;
+                    if(Dfs(u)) {
+                        return true;
                     }
                 } else if (colors[u] == GREY) {
-                    return false;
+                    return true;
                 }
             }
             colors[v] = BLACK;
-            return true;
+            return false;
 
         }   
 };
@@ -83,14 +88,13 @@ int main() {
     scanf("%u %u", &v1, &v2);
     scanf("%u %u", &numVertices, &numEdges);
 
-    // Condição suficiente mas não necessária para o grafo ser um DAG
-    if(numVertices < numEdges - 1) {
+    Graph* graph = new Graph(numVertices, numEdges);
+    build_inverted_graph(graph);
+
+    if(!graph->IsDAG()) {
         puts("0");
         return 0;
     }
-
-    Graph* graph = new Graph(numVertices, numEdges);
-    build_inverted_graph(graph);
 
     
     return 0;
