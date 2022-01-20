@@ -35,27 +35,17 @@ class Graph {
         }
 
         bool IsDAG() {
-            // Encontrar o vertice com out-degree 0
-            unsigned int vertice = 0;
-            for (size_t i = 1; i < adj.size(); i++) {
-                if(adj[i].size() == 0) {
-                    vertice = i;
-                    break;
-                }
+            for (int v = 1; v < numVertices; v++) {
+                if (colors[v] == WHITE && !Dfs(v))
+                    return false;
             }
 
-            // Se esse vertice não existir, então o grafo não é um DAG
-            if(vertice == 0) {
-                return false;
-            }
-
-            // Fazer DFS  apartir desse vertice 
-            return Dfs(vertice);
+            return true;
         }
 
 
         bool Dfs(unsigned int v) {
-            colors[v] = WHITE;
+            colors[v] = GREY;
             for (unsigned int u : adj[v]) {
                 if (colors[u] == WHITE) {
                     if(!Dfs(u)) {
