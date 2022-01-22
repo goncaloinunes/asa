@@ -9,7 +9,8 @@ using namespace std;
 #define GREY  1
 #define BLACK  2
 #define GREY_SECOND_DFS 3
-#define COMMON_ANCESTOR  4
+#define BLACK_SECOND_DFS 4
+#define COMMON_ANCESTOR  5
 
 class Graph {
     public:
@@ -18,13 +19,14 @@ class Graph {
         vector<unsigned int> original_out_degrees;
         unsigned int number_vertices;
         unsigned int number_edges;
+        char base_color;
     
         Graph(unsigned int vertices, unsigned int edges) {
             number_vertices = vertices;
             number_edges = edges;
             adj.resize(number_vertices+1);
             colors.assign(number_vertices+1, WHITE);
-            original_out_degrees.assign(number_vertices+1, 0);
+            base_color = WHITE;
         }
 
         void addEdge(unsigned int v1, unsigned int v2) {
@@ -35,16 +37,9 @@ class Graph {
                 puts("0");
                 exit(EXIT_SUCCESS);
             }
-
-            original_out_degrees[v2]++;
         }
 
         bool IsDAG() {
-            // Condição suficiente mas não necessária para o grafo não ser um DAG
-            if(number_vertices < number_edges - 1) {
-                return false;
-            }
-
             for (size_t v = 1; v < number_vertices+1; v++) {
                 if (colors[v] == WHITE && IsDagVisit(v)) {
                     colors.assign(number_vertices+1, WHITE);
@@ -84,49 +79,76 @@ class Graph {
             colors[v] = BLACK;
         }
 
-        void unmarkParents(unsigned int v) {
+        void SecondDfsVisit(unsigned int v, vector<unsigned int>* common_ancestors) {
             for(unsigned int u : adj[v]) {
-                if(colors[u] == BLACK) {
-                    FirstDfsVisit(u);
+                if(colors[u] == WHITE || colors[u] == BLACK) {
+                    SecondDfsVisit(u, common_ancestors);
                 }
             }
-            colors[v] = GREY;
-        }
-
-        void SecondDfsVisit(unsigned int v, list<unsigned int>* lcas) {
-            colors[v] = GREY_SECOND_DFS;
-            for(unsigned int u : adj[v]) {
-                if(colors[u] == WHITE) {
-                    SecondDfsVisit(u, lcas);
-                } else if (colors[u] == BLACK) {
-                    for(unsigned int parent : adj[v]) {
-                        lcas->remove(parent);
-                    }
-
-                    unmarkParents(u);
-                    lcas->push_front(u);
-                    colors[u] = COMMON_ANCESTOR;
-                    continue;
-                }
+            if(colors[v] == BLACK) {
+                colors[v] = COMMON_ANCESTOR;
+                common_ancestors->push_back(v);
+            } else {
+                colors[v] = BLACK_SECOND_DFS;
             }
-            colors[v] = BLACK;
+            
             
         }
+
+        
 
         void LCAs(unsigned int v1, unsigned int v2) {
-            list<unsigned int> lcas;
+            vector<unsigned int> common_ancestors;
+            vector<vector<unsigned int>> common_ancestors_adj;
+            vector<vector<unsigned int>> inverted_adj(adj.size());
+            vector<unsigned int> lcas;
 
             FirstDfsVisit(v1);
+            colors[v1] = WHITE;
 
             if(colors[v2] == BLACK) {
-                lcas.push_front(v2);
+                common_ancestors.push_back(v2);
                 colors[v2] = COMMON_ANCESTOR;
             } else {
-                SecondDfsVisit(v2, &lcas);
+                SecondDfsVisit(v2, &common_ancestors);
             }
 
+            // Construir um sub-grafo só de ancestrais comuns, com as arestas originais (não invertidas)
+            for(unsigned int u : common_ancestors) {
+                for(unsigned int v : adj[u]) {
+                    if(colors[v] == COMMON_ANCESTOR) {
+                        inverted_adj[v].push_back(u);
+                    } 
+                }
+            }
+
+            // for(size_t i = 1; i < number_vertices+1; i++) {
+            //     for(unsigned int v : adj[i]) {
+            //         inverted_adj[v].push_back(i);
+            //     }
+            // }
+
+            /*
+            cout << "COLORS: ";
+            for(int i = 1; i < number_vertices+1; i++) {
+                printf("%d ", colors[i]);
+            }
+            */
             
-            lcas.sort();
+            /*
+            for(unsigned int v : common_ancestors) {
+                cout << v << " ";
+            }
+            */
+
+            // Se o out-degree do vertice for 0, então ele é do mais proximos
+            for(unsigned int v : common_ancestors) {
+                if(inverted_adj[v].size() == 0) {
+                    lcas.push_back(v);
+                }
+            }
+            
+            sort(lcas.begin(), lcas.end());
 
             if(lcas.size() > 0) {
                 for(unsigned int v : lcas) {
