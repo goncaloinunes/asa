@@ -104,7 +104,12 @@ class Graph {
             vector<unsigned int> lcas;
 
             FirstDfsVisit(v1);
-            colors[v1] = WHITE;
+            //colors[v1] = WHITE;
+
+            // cout << "COLORS: ";
+            // for(int i = 1; i < number_vertices+1; i++) {
+            //     printf("%i: %d ", i, colors[i]);
+            // }
 
             if(colors[v2] == BLACK) {
                 common_ancestors.push_back(v2);
@@ -112,6 +117,19 @@ class Graph {
             } else {
                 SecondDfsVisit(v2, &common_ancestors);
             }
+
+            // cout << "\nCOLORS: ";
+            // for(int i = 1; i < number_vertices+1; i++) {
+            //     printf("%i: %d ", i, colors[i]);
+            // }
+
+
+            // cout << "\nCOMMON ANCESTORS: ";      
+            // for(unsigned int v : common_ancestors) {
+            //     cout << v << " ";
+            // }
+            
+
 
             // Construir um sub-grafo só de ancestrais comuns, com as arestas originais (não invertidas)
             for(unsigned int u : common_ancestors) {
@@ -121,26 +139,18 @@ class Graph {
                     } 
                 }
             }
-
-            // for(size_t i = 1; i < number_vertices+1; i++) {
-            //     for(unsigned int v : adj[i]) {
-            //         inverted_adj[v].push_back(i);
+            
+            // puts("");
+            // for(unsigned int i = 1; i < inverted_adj.size(); i++) {
+            //     cout << i << ": ";
+            //     for(unsigned int v : inverted_adj[i]) {
+            //         printf("%d ", v);
             //     }
+            //     puts("");
             // }
 
-            /*
-            cout << "COLORS: ";
-            for(int i = 1; i < number_vertices+1; i++) {
-                printf("%d ", colors[i]);
-            }
-            */
-            
-            /*
-            for(unsigned int v : common_ancestors) {
-                cout << v << " ";
-            }
-            */
 
+            
             // Se o out-degree do vertice for 0, então ele é do mais proximos
             for(unsigned int v : common_ancestors) {
                 if(inverted_adj[v].size() == 0) {
