@@ -16,17 +16,14 @@ class Graph {
     public:
         vector<vector<unsigned int>> adj;
         vector<char> colors;
-        vector<unsigned int> original_out_degrees;
         unsigned int number_vertices;
         unsigned int number_edges;
-        char base_color;
     
         Graph(unsigned int vertices, unsigned int edges) {
             number_vertices = vertices;
             number_edges = edges;
             adj.resize(number_vertices+1);
             colors.assign(number_vertices+1, WHITE);
-            base_color = WHITE;
         }
 
         void addEdge(unsigned int v1, unsigned int v2) {
@@ -69,6 +66,7 @@ class Graph {
 
         }
 
+
         void FirstDfsVisit(unsigned int v) {
             colors[v] = GREY;
             for(unsigned int u : adj[v]) {
@@ -78,6 +76,7 @@ class Graph {
             }
             colors[v] = BLACK;
         }
+
 
         void SecondDfsVisit(unsigned int v, vector<unsigned int>* common_ancestors) {
             for(unsigned int u : adj[v]) {
@@ -96,7 +95,6 @@ class Graph {
         }
 
         
-
         void LCAs(unsigned int v1, unsigned int v2) {
             vector<unsigned int> common_ancestors;
             vector<vector<unsigned int>> common_ancestors_adj;
@@ -104,12 +102,6 @@ class Graph {
             vector<unsigned int> lcas;
 
             FirstDfsVisit(v1);
-            //colors[v1] = WHITE;
-
-            // cout << "COLORS: ";
-            // for(int i = 1; i < number_vertices+1; i++) {
-            //     printf("%i: %d ", i, colors[i]);
-            // }
 
             if(colors[v2] == BLACK) {
                 common_ancestors.push_back(v2);
@@ -117,19 +109,6 @@ class Graph {
             } else {
                 SecondDfsVisit(v2, &common_ancestors);
             }
-
-            // cout << "\nCOLORS: ";
-            // for(int i = 1; i < number_vertices+1; i++) {
-            //     printf("%i: %d ", i, colors[i]);
-            // }
-
-
-            // cout << "\nCOMMON ANCESTORS: ";      
-            // for(unsigned int v : common_ancestors) {
-            //     cout << v << " ";
-            // }
-            
-
 
             // Construir um sub-grafo só de ancestrais comuns, com as arestas originais (não invertidas)
             for(unsigned int u : common_ancestors) {
@@ -139,18 +118,8 @@ class Graph {
                     } 
                 }
             }
-            
-            // puts("");
-            // for(unsigned int i = 1; i < inverted_adj.size(); i++) {
-            //     cout << i << ": ";
-            //     for(unsigned int v : inverted_adj[i]) {
-            //         printf("%d ", v);
-            //     }
-            //     puts("");
-            // }
 
 
-            
             // Se o out-degree do vertice for 0, então ele é do mais proximos
             for(unsigned int v : common_ancestors) {
                 if(inverted_adj[v].size() == 0) {
