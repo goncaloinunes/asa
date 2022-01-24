@@ -34,8 +34,11 @@ def generateInputs():
     for i in range(MINIMUM_INPUT_SIZE, MAXIMUN_INPUT_SIZE+1, STEP):
         print(f"Generating input of size {i} ...")
         filename = INPUT_FOLDER + FILENAME  + "_" + str(i)
+        start = timer()
         os.system(f"./{GENERATOR} {i} {PROBABILITY} >> {filename}")
-        print("Completed!\n")
+        end = timer()
+        elaped_time = (end - start)
+        print(f"Completed in {elaped_time} seconds!\n")
                  
 
     print("All Generations completed!\n\n")
@@ -56,7 +59,7 @@ def calculateTime():
         os.system(EXECUTABLE_PATH + " < " + INPUT_FOLDER + filename + r" > /dev/null")
         end = timer()
         
-        elaped_time = (end- start)
+        elaped_time = (end - start)
 
         data.append([input_size, elaped_time])
 
