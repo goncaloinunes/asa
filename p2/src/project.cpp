@@ -97,7 +97,6 @@ class Graph {
         
         void LCAs(unsigned int v1, unsigned int v2) {
             vector<unsigned int> common_ancestors;
-            vector<vector<unsigned int>> common_ancestors_adj;
             vector<vector<unsigned int>> inverted_adj(adj.size());
             vector<unsigned int> lcas;
 
@@ -111,23 +110,24 @@ class Graph {
             }
 
             // Construir um sub-grafo só de ancestrais comuns, com as arestas originais (não invertidas)
-            for(unsigned int u : common_ancestors) {
-                for(unsigned int v : adj[u]) {
-                    if(colors[v] == COMMON_ANCESTOR) {
-                        inverted_adj[v].push_back(u);
-                    } 
+            for(unsigned int i = 1; i < number_vertices+1; i++) {
+                if(colors[i] == COMMON_ANCESTOR) {
+                    for(unsigned int v : adj[i]) {
+                        if(colors[v] == COMMON_ANCESTOR) {
+                            inverted_adj[v].push_back(i);
+                        } 
+                    }
                 }
             }
 
 
             // Se o out-degree do vertice for 0, então ele é do mais proximos
-            for(unsigned int v : common_ancestors) {
-                if(inverted_adj[v].size() == 0) {
-                    lcas.push_back(v);
+            for(unsigned int i = 1; i < number_vertices+1; i++) {
+                if(colors[i] == COMMON_ANCESTOR && inverted_adj[i].size() == 0) {
+                    lcas.push_back(i);
                 }
             }
             
-            sort(lcas.begin(), lcas.end());
 
             if(lcas.size() > 0) {
                 for(unsigned int v : lcas) {
